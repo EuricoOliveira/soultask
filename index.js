@@ -53,9 +53,47 @@ app.get("/tarefas/:id", async (req, res) => {
     res.status(500).json({ message: "Ocorreu um erro!" });
   }
 });
-// Atualização de uma Tarefa (PUT)
-// Remoção de uma Tarefa (DELETE)
 
+// Atualização de uma Tarefa (PUT)
+app.put("/tarefas/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { titulo, descricao, status } = req.body;
+
+    // Caso encontre o id, realiza a atualização
+    // Retorna o objeto encontrado
+    const tarefaExistente = await Tarefa.findByIdAndUpdate(id, {
+      titulo,
+      descricao,
+      status,
+    });
+    if(tarefaExistente) {
+    res.json({message: "Tarefa editada com sucesso."})
+  } else {
+    res.status(404).json({message: "Tarefa não encontrada!"})
+  }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Ocorreu um erro!" });
+  }
+});
+
+// Remoção de uma Tarefa (DELETE)
+app.delete("/tarefas/:id", async (req, res) => {
+  try {
+    // Checa se a tarefa existe e remove do banco 
+    const {id} = req.params    
+    const tarefaExistente = await Tarefa.findByIdAndDelete(id)
+    if(tarefaExistente) {
+      res.json({message: "Tarefa removida com sucesso."})
+    } else {
+      res.status(404).json({message: "Tarefa não encontrada!"})
+    }
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ message: "Ocorreu um erro!" });
+  }
+})
 // Escuta de eventos
 app.listen(3000, () => {
   console.log("Servidor rodando em HTTP://localhost:3000/");
